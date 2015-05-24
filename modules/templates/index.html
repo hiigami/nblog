@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<html manifest="main.appcache">
+<head>
+    <meta charset="ISO-8859-1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Myblog</title>
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/blog.css">
+</head>
+<body>
+    <div class="notifications"><span class="glyphicon glyphicon-exclamation-sign inline-el"></span><p class="notifications-text inline-el"></p></div>
+    <div class="float-button"><button type="button" class="btn btn-primary show-modal"><img src="img/ic_action_new.png" alt="new post" class="img-circle"></button></div>
+	<div id="site-wrapper">
+    	<header id="site-header">
+    		<h1>MyBlog</h1>
+    	</header>
+        <div class="site-content container-fluid">
+            <div class="row">
+                {% for p in data %}
+                {% if p.title %}
+                <div class="col-post col-xs-6 col-sm-4">
+                    <div class="post">
+                        <dl class="dl-horizontal">
+                            <dt><img src="img/ic_action_dock.png" alt="..." class="img-circle"></dt>
+                            <dd>
+                                <h4>[[p.author]]</h4>
+                                <p>[[p.createdAt|date('Y-m-d')]]</p>
+                            </dd>
+                        </dl>
+                        <div class="post-body">
+                            <h4>[[p.title]]</h4>
+                            <div><img src="data:image/png;base64, [[p.file]]" class="img-responsive"/></div>
+                            <div class="post-body-content">
+                                [[p.content]]
+                            </div>
+                        </div>
+                        <div class="post-footer"><button class="btn btn-default btn-vote" data-action="/vote/" data-slug="[[p.slug]]" data-title="[[p.title]]" data-display="displayButton">+ [[p.votes]]</button></div>
+                    </div>
+                </div>
+                {% if loop.index%3==0 %}
+                <div class="clearfix"></div>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+	</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">New Post</h4>
+            </div>
+            <form method="post" action="/save/" data-display="displayJson" enctype="multipart/form-data">
+            <div class="modal-body">
+                <dl class="dl-horizontal col-xs-6">
+                    <dt>Title</dt>
+                    <dd><input type="text" class="form-control" name="title" required></dd>
+                    <dt>Author</dt>
+                    <dd><input type="text" class="form-control" name="author" required></dd>
+                </dl>
+                <dl class="dl-horizontal col-xs-6">
+                    <dt>Content</dt>
+                    <dd><textarea class="form-control" rows="3" name="content"></textarea></dd>
+                    <dt>Photo</dt>
+                    <dd><input type="file" name="file" id="file" /></dd>
+                </dl>
+            </div>
+            <div><img src="//placehold.it/1x1/" id="img" class="hidden"/></div>
+            <div id="base" class="hidden"></div>
+            <div class="modal-footer">
+                <input type="hidden" name="slug" value="" />
+                <button type="submit" class="btn btn-primary" data-refresh="1" data-display="displayJson" data-displayel="#myModal form"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<p class="csrftoken hidden">[[csrf]]</p>
+<script src="js/jquery-2.1.4.min.js" type="text/javascript"></script>
+<script src="js/bootstrap.min.js" type="text/javascript"></script>
+<script src="js/blog.js" type="text/javascript"></script>
+</body>
+</html>
