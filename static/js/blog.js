@@ -33,7 +33,7 @@ function sameOrigin(url) {
         !(/^(\/\/|http:|https:).*/.test(url));
 }
 
-var eApp = eApp || { host: location.protocol + '//' + location.host, val: 0, _slug:""};
+var eApp = eApp || { host: location.protocol + '//' + location.host, val: 0, _slug:"", postContentMinHeigth:"100px", postContentClass:"div.post-body-content", btnWaitingHTML:"<i class='glyphicon glyphicon-refresh'></i>", notificationClass:".notifications", divIdBase64Img:"base", allowedExtensions: ['jpg', 'jpeg', 'gif', 'png'],};
 
 eApp.getcsrftoken = function(){
     return $(".csrftoken").text();
@@ -42,7 +42,7 @@ eApp.getcsrftoken = function(){
 eApp.ajax = function (url, data, action, type, $responseElement, _processData, _contentType) {
     _processData = typeof _processData !== 'undefined' ? _processData : true;
     _contentType = typeof _contentType !== 'undefined' ? _contentType : "application/x-www-form-urlencoded; charset=UTF-8"; 
-    var csrftoken = getCookie("csrftoken");
+    //var csrftoken = getCookie("csrftoken");
     var newurl = eApp.host + url;
     var arr = document.URL.match(/next=([//a-zA-Z0-9]+)/)
     if (arr != null && arr[1])
@@ -120,8 +120,8 @@ eApp.displayJson = function (data, $responseElement) {
                         '</dl>'+
                         '<div class="post-body">'+
                             '<h4>'+$("form input[name=title]").val()+'</h4>';
-        if($("#base").text() != "")
-             _htmlPost += '<div><img src="'+$("#base").text()+'" class="img-responsive"/></div>';
+        if($("#"+eApp.divIdBase64Img).text() != "")
+             _htmlPost += '<div><img src="'+$("#"+eApp.divIdBase64Img).text()+'" class="img-responsive"/></div>';
         _htmlPost += '<div class="post-body-content">'+
                                 $("form textarea[name=content]").val()+
                             '</div>'+
@@ -130,6 +130,7 @@ eApp.displayJson = function (data, $responseElement) {
                     '</div>'+
                 '</div>';
         $(".site-content .row").append(_htmlPost);
+        eApp.readMoreShowLess($(".site-content .row .col-post").last());
     }   
     if (data.next) { window.location.href = data.next; }
 }
@@ -147,26 +148,34 @@ eApp.displayButton = function (data, $responseElement) {
 eApp.notifications = function (data) {
     var _data = "";
     var _tmp = $.extend(true, "", data);
-    if ($(".notifications").hasClass('anime')) {
+    if ($(eApp.notificationClass).hasClass('anime')) {
         setTimeout(function () { eApp.notifications(_tmp); }, 1000);
     } else {
-        $(".notifications").addClass('anime');
+        $(eApp.notificationClass).addClass('anime');
         $.each(data, function (key, val) { _data += key + " : " + val + "<br>" });
-        $(".notifications .notifications-text").empty().html(_data);
-        $(".notifications").animate({
+        $(eApp.notificationClass + " .notifications-text").empty().html(_data);
+        $(eApp.notificationClass).animate({
             left: "+=300"
-        }, 1000).delay(2000).animate({ left: "-=300" }, 1000, function () { $(".notifications").removeClass('anime'); });
+        }, 1000).delay(2000).animate({ left: "-=300" }, 1000, function () { $(eApp.notificationClass).removeClass('anime'); });
     }
 }
 
 function readImage() {
     if ( this.files && this.files[0] ) {
-        var FR= new FileReader();
-        FR.onload = function(e) {
-            document.getElementById('img').src = e.target.result;
-            document.getElementById('base').innerHTML = e.target.result;
-        };       
-        FR.readAsDataURL(this.files[0]);
+        var value = $(this).val();
+        var file_name = value.toLowerCase();
+        var extension = file_name.substring(file_name.lastIndexOf('.') + 1);
+        if(eApp.allowedExtensions.lastIndexOf(extension)>-1){
+            var FR= new FileReader();
+            FR.onload = function(e) {
+                document.getElementById('img').src = e.target.result;
+                document.getElementById(eApp.divIdBase64Img).innerHTML = e.target.result;
+            };       
+            FR.readAsDataURL(this.files[0]);
+        }else{
+            $(this).val('');
+            eApp.notifications({"Error": "Tipo de archivo invalido"});
+        }
     }
 }
     
@@ -177,13 +186,12 @@ eApp.generalClickHandler = function(){
         e.preventDefault();
         var $_form = $(this);
         var $btn = $(":submit", $_form);
-        var txt_btn = eApp.disableEnableElement($btn, true, "<i class='glyphicon glyphicon-refresh'></i>");
+        var txt_btn = eApp.disableEnableElement($btn, true, eApp.btnWaitingHTML);
         var newurl = $_form.attr("action");
         var newdata = $_form.serialize();
         eApp._slug=Math.random().toString(36).substring(8);
         if ($('input[name=slug]',$_form).val() == "") {
             newdata = newdata.replace("&slug=","");
-
         	newdata += "&slug="+eApp._slug+"&createdAt="+new Date()+"&votes=0&active=true";
         }
         newdata+="&_csrf="+eApp.getcsrftoken();
@@ -209,14 +217,14 @@ eApp.generalClickHandler = function(){
 	$('.show-modal').on('click', function () {
 		var _action = 'show';
 		$('#myModal form')[0].reset();
-        $("#base").text("");
+        $("#"+eApp.divIdBase64Img).text("");
 		$('#myModal').modal(_action);
 	});
 
 	$(".btn-vote").on("click", function(e){
 		e.preventDefault();
 		var $btn = $(this);
-        var txt_btn = eApp.disableEnableElement($btn, true, "<i class='glyphicon glyphicon-refresh'></i>");
+        var txt_btn = eApp.disableEnableElement($btn, true, eApp.btnWaitingHTML);
         var newurl = $btn.data("action");
         var displayType = $btn.data("display") ? $btn.data("display") : null;
         var $displayEl = $btn;
@@ -229,6 +237,24 @@ eApp.generalClickHandler = function(){
                 eApp.disableEnableElement($btn, false);
             });
 	});
+
+    $(".btn-rm").on("click", function(e){
+        e.preventDefault();
+        var $btn = $(this);
+        $btn.siblings(eApp.postContentClass).css({"height":"100%"});
+        $btn.addClass('hidden');
+        $btn.siblings('.btn-sl').removeClass('hidden');
+
+    });
+
+    $(".btn-sl").on("click", function(e){
+        e.preventDefault();
+        var $btn = $(this);
+        $btn.siblings(eApp.postContentClass).css({"height": eApp.postContentMinHeigth});
+        $btn.addClass('hidden');
+        $btn.siblings('.btn-rm').removeClass('hidden');
+
+    });
 
 	document.getElementById("file").addEventListener("change", readImage, false);
 }
@@ -252,8 +278,29 @@ eApp.disableEnableElement = function ($el, state, optionalNewHtml) {
     }
 }
 
+eApp.readMoreShowLess = function ($el){
+    var regex = new RegExp(/./g);
+    if(!$el){
+        $("div.post-body-content").each(function(){
+            if(eApp.charCounter(regex, 360, $(this)))
+                $(this).siblings('.btn-rm').removeClass("hidden");
+        });
+    }else{
+        if(eApp.charCounter(regex, 360, $el))
+            $el.siblings('.btn-rm').removeClass("hidden");
+    }       
+}
+
+eApp.charCounter = function(regex, limit, $el){
+    var count = $el.text().match(regex).length;
+    if(count>limit)
+        return true;
+    return false;
+}
+
 eApp.run = function () {
     eApp.generalClickHandler();
+    eApp.readMoreShowLess(null);
 }
 
 function StartUp(app) {

@@ -91,6 +91,9 @@ header h1{
     .notifications span {
         font-size: x-large;
     }
+.site-content .clearfix{
+    display: block;
+}
 .site-content .col-post {
     padding-top: 30px;
 }
@@ -112,18 +115,25 @@ header h1{
     margin-bottom: 1em;
     width: 100%;
 }
+.site-content .post .post-body span[role="button"]{
+    color: #427fed;
+    cursor: pointer;
+}
 .site-content .post dd h4, .site-content .post .post-body h4{
     text-overflow: ellipsis;
     overflow: hidden;
 }
 .site-content .post .post-body .post-body-content{
     margin-top: 20px;
-    overflow: auto;
+    word-wrap: break-word;
+    width: 100%;
+    overflow: hidden;
+    height: 100px;
+    white-space: normal;
 }
 .site-content .post .post-body, .site-content .post .post-footer{
     padding: 0px 45px 20px 45px;
 }
-
 .modal-footer {
     border-top: none;
 }
@@ -133,6 +143,11 @@ header h1{
     }
     .dl-horizontal dd {
         margin-left: 136px;
+    }
+}
+@media (max-width: 768px){
+    .site-content .clearfix{
+        display: none; 
     }
 }
 

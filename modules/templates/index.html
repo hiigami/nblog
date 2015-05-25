@@ -32,11 +32,13 @@
                         <div class="post-body">
                             <h4>[[p.title]]</h4>
                             {% if p.file != "" %}
-                            <div><img src="data:image/png;base64, [[p.file]]" class="img-responsive"/></div>
+                            <div><img src="data:image/png;base64, [[p.file]]" class="img-responsive center-block"/></div>
                             {% endif %}
                             <div class="post-body-content">
                                 [[p.content]]
                             </div>
+                            <span role="button" class="hidden btn-rm" tabindex="0">Read more</span>
+                            <span role="button" class="hidden btn-sl" tabindex="0">Show less</span>
                         </div>
                         <div class="post-footer"><button class="btn btn-default btn-vote" data-action="/vote/" data-slug="[[p.slug]]" data-title="[[p.title]]" data-display="displayButton">+ [[p.votes]]</button></div>
                     </div>
@@ -68,7 +70,7 @@
                     <dt>Content</dt>
                     <dd><textarea class="form-control" rows="3" name="content"></textarea></dd>
                     <dt>Photo</dt>
-                    <dd><input type="file" name="file" id="file" /></dd>
+                    <dd><input type="file" name="file" id="file" accept="image/*" /></dd>
                 </dl>
             </div>
             <div><img src="//placehold.it/1x1/" id="img" class="hidden"/></div>
