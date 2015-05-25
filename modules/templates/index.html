@@ -31,7 +31,9 @@
                         </dl>
                         <div class="post-body">
                             <h4>[[p.title]]</h4>
+                            {% if p.file != "" %}
                             <div><img src="data:image/png;base64, [[p.file]]" class="img-responsive"/></div>
+                            {% endif %}
                             <div class="post-body-content">
                                 [[p.content]]
                             </div>
@@ -58,9 +60,9 @@
             <div class="modal-body">
                 <dl class="dl-horizontal col-xs-6">
                     <dt>Title</dt>
-                    <dd><input type="text" class="form-control" name="title" required></dd>
+                    <dd><input type="text" class="form-control" name="title"  maxlength="15" required></dd>
                     <dt>Author</dt>
-                    <dd><input type="text" class="form-control" name="author" required></dd>
+                    <dd><input type="text" class="form-control" name="author"  maxlength="15" required></dd>
                 </dl>
                 <dl class="dl-horizontal col-xs-6">
                     <dt>Content</dt>

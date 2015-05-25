@@ -109,7 +109,7 @@ eApp.displayJson = function (data, $responseElement) {
         if(count%3==0){
             $(".site-content .row").append("<div class='clearfix'></div>");
         }
-        $(".site-content .row").append('<div class="col-post col-md-4">'+
+        var _htmlPost = '<div class="col-post col-md-4">'+
                     '<div class="post">'+
                         '<dl class="dl-horizontal">'+
                             '<dt><img src="img/ic_action_dock.png" alt="..." class="img-circle"></dt>'+
@@ -119,15 +119,17 @@ eApp.displayJson = function (data, $responseElement) {
                             '</dd>'+
                         '</dl>'+
                         '<div class="post-body">'+
-                            '<h4>'+$("form input[name=title]").val()+'</h4>'+
-                            '<div><img src="'+$("#base").text()+'" class="img-responsive"/></div>'+
-                            '<div class="post-body-content">'+
-                                $("form input[name=content]").val()+
+                            '<h4>'+$("form input[name=title]").val()+'</h4>';
+        if($("#base").text() != "")
+             _htmlPost += '<div><img src="'+$("#base").text()+'" class="img-responsive"/></div>';
+        _htmlPost += '<div class="post-body-content">'+
+                                $("form textarea[name=content]").val()+
                             '</div>'+
                         '</div>'+
                         '<div class="post-footer"><button class="btn btn-default btn-vote" data-action="/vote/" data-slug="'+eApp._slug+'" data-title="'+$("form input[name=title]").val()+'" data-display="displayButton">+ 0</button></div>'+
                     '</div>'+
-                '</div>');
+                '</div>';
+        $(".site-content .row").append(_htmlPost);
     }   
     if (data.next) { window.location.href = data.next; }
 }
@@ -206,7 +208,8 @@ eApp.generalClickHandler = function(){
 
 	$('.show-modal').on('click', function () {
 		var _action = 'show';
-		//--- edit function ----
+		$('#myModal form')[0].reset();
+        $("#base").text("");
 		$('#myModal').modal(_action);
 	});
 

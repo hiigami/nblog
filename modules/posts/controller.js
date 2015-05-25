@@ -54,8 +54,8 @@ Post.prototype.save = {
 			req.pipe(req.busboy);
 
        		req.busboy.on('file', function (fieldname, file, filename) {
-		            //console.log("Uploading: " + filename);
-		            
+		        if (filename != "") {
+		            console.log(filename);
 		            //Path where image will be uploaded
 		            var filePath = __dirname + '/img/' + filename;
 		            var fstream = fs.createWriteStream(filePath);
@@ -67,6 +67,10 @@ Post.prototype.save = {
 					   		saveModel(_data, res);
 						});        
 			        });
+		        }else{
+		        	_data["file"]="";
+		        	saveModel(_data, res);
+		        }
         	});
 
 
